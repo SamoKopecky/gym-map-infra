@@ -1,0 +1,11 @@
+---
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: $HOME/app
+    state: directory
+    mode: '0755'
+
+- name: Git checkout infra repo
+  ansible.builtin.git:
+    repo: 'https://github.com/SamoKopecky/gym-map-infra'
+    dest: $HOME/app

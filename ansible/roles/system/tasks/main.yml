@@ -1,0 +1,82 @@
+---
+- name: Set a hostname
+  ansible.builtin.hostname:
+    name: "{{ local_hostname }}.org"
+
+- name: Set timezone to Europe/Prague
+  community.general.timezone:
+    name: Europe/Prague
+
+- name: Edit hosts file
+  ansible.builtin.lineinfile:
+    dest: /etc/hosts
+    regexp: ^#?127.0.0.1\s*localhost
+    line: |
+      127.0.0.1	localhost {{ local_hostname }}.org
+    state: present
+    mode: "0644"
+
+- name: Update SSH configuration to be more secure
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    validate: sshd -T -f %s
+    mode: "0644"
+  with_items:
+    - regexp: ^#?PasswordAuthentication
+      line: PasswordAuthentication no
+    - regexp: ^#?PermitRootLogin
+      line: PermitRootLogin no
+    - regexp: ^#?PermitEmptyPasswords
+      line: PermitEmptyPasswords no
+    - regexp: ^#?X11Forwarding
+      line: X11Forwarding no
+  notify:
+    - Restart sshd
+
+- name: Install aptitude
+  ansible.builtin.apt:
+    name: aptitude
+    state: latest
+    update_cache: true
+
+- name: Update apt and install required system packages
+  ansible.builtin.apt:
+    pkg:
+      - curl
+      - vim
+      - git
+      - htop
+      - iptables
+      - neofetch
+      - make
+      - build-essential
+      - jq
+    update_cache: true
+
+- name: Add git aliases
+  ansible.builtin.blockinfile:
+    path: /home/{{ ansible_user }}/.gitconfig
+    append_newline: true
+    prepend_newline: true
+    create: true
+    mode: "0644"
+    block: |
+      [core]
+        editor = vim
+      [alias]
+        sw = switch
+        st = status
+  tags:
+    - temp
+
+- name: Upgrade all packages
+  ansible.builtin.apt:
+    upgrade: full
+
+- name: Autoremove old packages
+  ansible.builtin.apt:
+    autoremove: true
+

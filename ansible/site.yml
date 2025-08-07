@@ -1,0 +1,26 @@
+---
+- name: Setup system
+  hosts: server
+  become: true
+
+  handlers:
+    - name: Import global handlers
+      ansible.builtin.import_tasks: handlers/main.yml
+
+  tasks:
+    - name: Use system role
+      ansible.builtin.import_role:
+        name: system
+
+- name: Setup app
+  hosts: server
+
+  handlers:
+    - name: Import global handlers
+      ansible.builtin.import_tasks: handlers/main.yml
+
+  tasks:
+    - name: Use server system role
+      ansible.builtin.import_role:
+        name: app
+

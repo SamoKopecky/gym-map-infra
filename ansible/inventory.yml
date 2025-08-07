@@ -1,0 +1,9 @@
+---
+all:
+  hosts:
+    server:
+      ansible_host: mars
+      local_hostname: mars
+      ansible_become_pass: "{{ sudo_passwd }}"
+      ansible_user: debian
+
