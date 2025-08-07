@@ -9,3 +9,9 @@
   ansible.builtin.git:
     repo: 'https://github.com/SamoKopecky/gym-map-infra'
     dest: $HOME/app
+
+
+- name: Run `docker compose up`
+  community.docker.docker_compose_v2:
+    project_src: app
+  register: output
