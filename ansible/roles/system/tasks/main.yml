@@ -58,6 +58,9 @@
       - ca-certificates
       - gnupg2
       - software-properties-common
+      - yadm
+      - fuse
+      - tmux
     update_cache: true
 
 - name: Add Docker GPG apt Key
@@ -116,4 +119,10 @@
 - name: Autoremove old packages
   ansible.builtin.apt:
     autoremove: true
+
+- name: Install nvim
+  shell: |
+    curl -LO https://github.com/neovim/neovim/releases/download/v0.11.3/nvim-linux-x86_64.appimage
+    mv ./nvim-linux-x86_64.appimage /usr/local/bin/nvim
+    chmod +x /usr/local/bin/nvim
 
