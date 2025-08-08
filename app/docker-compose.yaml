@@ -1,6 +1,42 @@
+---
 services:
-  bfmap:
-    container_name: bfmap
+
+  postgresql:
+    networks:
+      - postgresql
+    image: 'postgres:17'
+    container_name: postgresql
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: root
+    volumes:
+      - '/var/infra/postgresql/data:/var/lib/postgresql/data'
+      - './postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql'
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -h localhost -U $$POSTGRES_USER
+      interval: 2s
+
+  keycloak:
+    container_name: keycloak
+    restart: unless-stopped
+    networks:
+      - nginx
+      - postgresql
+    image: quay.io/keycloak/keycloak:26.1.4
+    env_file: ./.env
+    command: start --verbose
+
+  backend:
+    container_name: backend
+    depends_on:
+      postgresql:
+        condition: service_started
+    networks:
+      - postgresql
+      - nginx
     restart: unless-stopped
     environment:
       NODE_ENV: "production"
@@ -11,16 +47,16 @@ services:
       - "3000"
       - "-s"
       - "dist/"
-  bfmapbe:
-    container_name: bfmapbe
+
+  frontend:
+    container_name: frontend
+    networks:
+      - nginx
     restart: unless-stopped
     expose:
       - "5000"
     env_file: ./.env
     image: ghcr.io/samokopecky/gym-map-backend:main
-    # depends_on:
-    #   postgresql:
-    #     condition: service_started
     volumes:
       - '/home/debian/app/media/gym-map:/media'
     command:
@@ -29,3 +65,8 @@ services:
       - |
         ./wait-for.sh -t 10 db:5432 -- echo "wait-for: Postgres DB is ready"
         /app/gym-map --debug
+
+networks:
+  postgresql:
+  nginx:
+
