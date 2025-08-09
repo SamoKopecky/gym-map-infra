@@ -96,22 +96,6 @@
     groups: docker
     append: true
 
-- name: Add git aliases
-  ansible.builtin.blockinfile:
-    path: /home/{{ ansible_user }}/.gitconfig
-    append_newline: true
-    prepend_newline: true
-    create: true
-    mode: "0644"
-    block: |
-      [core]
-        editor = vim
-      [alias]
-        sw = switch
-        st = status
-  tags:
-    - temp
-
 - name: Upgrade all packages
   ansible.builtin.apt:
     upgrade: full
