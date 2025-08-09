@@ -12,5 +12,3 @@ ansible-playbook site.yml --ask-vault-pass
 
 TODO:
 - add cron to certbot
-- configure nginx
-- configure kc
