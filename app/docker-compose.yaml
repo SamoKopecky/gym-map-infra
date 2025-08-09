@@ -1,6 +1,21 @@
 ---
 services:
 
+  nginx:
+    networks:
+      - nginx
+    image: nginx:1.29.0
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - 80:80/tcp
+      - 443:443/tcp
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/snippets/:/etc/nginx/snippets/:ro
+      - ./nginx/www:/var/www/site:ro
+      - /etc/app/ssl/conf:/etc/letsencrypt:ro
+
   postgresql:
     networks:
       - postgresql
@@ -10,8 +25,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_USER: root
     volumes:
-      - '/var/infra/postgresql/data:/var/lib/postgresql/data'
-      - './postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql'
+      - '/var/postgresql/data:/var/lib/postgresql/data'
+      - './init.sql:/docker-entrypoint-initdb.d/init.sql'
     restart: unless-stopped
     healthcheck:
       test:
@@ -29,13 +44,12 @@ services:
     env_file: ./.env
     command: start --verbose
 
-  backend:
-    container_name: backend
+  frontend:
+    container_name: frontend
     depends_on:
       postgresql:
         condition: service_started
     networks:
-      - postgresql
       - nginx
     restart: unless-stopped
     environment:
@@ -48,9 +62,10 @@ services:
       - "-s"
       - "dist/"
 
-  frontend:
-    container_name: frontend
+  backend:
+    container_name: backend
     networks:
+      - postgresql
       - nginx
     restart: unless-stopped
     expose:
