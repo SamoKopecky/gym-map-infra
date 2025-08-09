@@ -61,6 +61,7 @@
       - yadm
       - fuse
       - tmux
+      - ripgrep
     update_cache: true
 
 - name: Add Docker GPG apt Key
