@@ -1,0 +1,15 @@
+---
+version: '3'
+
+services:
+  certbot:
+    image: certbot/dns-cloudflare
+    volumes:
+      - /etc/app/ssl/conf:/etc/letsencrypt
+    command: >
+      certonly -v --dns-cloudflare --force-renewal
+      --email samo.kopecky@protonmail.com
+      -d auumn.org -d "*.auumn.org"
+      --agree-tos --non-interactive
+      --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini
+      --dns-cloudflare-propagation-seconds 60

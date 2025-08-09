@@ -9,3 +9,6 @@ To run ansible
 ```bash
 ansible-playbook site.yml --ask-vault-pass
 ```
+
+TODO:
+- add cron to certbot

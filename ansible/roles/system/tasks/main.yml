@@ -58,6 +58,9 @@
       - ca-certificates
       - gnupg2
       - software-properties-common
+      - yadm
+      - fuse
+      - tmux
     update_cache: true
 
 - name: Add Docker GPG apt Key
@@ -93,22 +96,6 @@
     groups: docker
     append: true
 
-- name: Add git aliases
-  ansible.builtin.blockinfile:
-    path: /home/{{ ansible_user }}/.gitconfig
-    append_newline: true
-    prepend_newline: true
-    create: true
-    mode: "0644"
-    block: |
-      [core]
-        editor = vim
-      [alias]
-        sw = switch
-        st = status
-  tags:
-    - temp
-
 - name: Upgrade all packages
   ansible.builtin.apt:
     upgrade: full
@@ -116,4 +103,10 @@
 - name: Autoremove old packages
   ansible.builtin.apt:
     autoremove: true
+
+- name: Install nvim
+  shell: |
+    curl -LO https://github.com/neovim/neovim/releases/download/v0.11.3/nvim-linux-x86_64.appimage
+    mv ./nvim-linux-x86_64.appimage /usr/local/bin/nvim
+    chmod +x /usr/local/bin/nvim
 

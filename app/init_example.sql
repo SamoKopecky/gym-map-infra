@@ -1,0 +1,11 @@
+CREATE USER gym_map
+WITH
+  SUPERUSER PASSWORD 'replaceme';
+
+CREATE DATABASE gym_map;
+
+CREATE USER keycloak
+WITH
+  SUPERUSER PASSWORD 'replaceme';
+
+CREATE DATABASE keycloak;

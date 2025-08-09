@@ -11,6 +11,8 @@
     - name: Use system role
       ansible.builtin.import_role:
         name: system
+      tags:
+        - system
 
 - name: Setup app
   hosts: server
@@ -23,4 +25,6 @@
     - name: Use server system role
       ansible.builtin.import_role:
         name: app
+      tags:
+        - app
 
