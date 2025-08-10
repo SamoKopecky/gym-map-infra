@@ -1,0 +1,12 @@
+[Interface]
+PrivateKey = {{ wireguard__private_key }}
+# Public key is {{ wireguard__public_key }}
+Address = {{ wireguard_host_address }}/24
+ListenPort = {{ wireguard_port }}
+
+
+[Peer]
+PublicKey = # client public key
+Endpoint = # client public ip
+AllowedIPs = 0.0.0.0/0
+PersistentKeepalive = {{ wireguard_keep_alive }}

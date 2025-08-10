@@ -62,6 +62,7 @@
       - fuse
       - tmux
       - ripgrep
+      - wireguard
     update_cache: true
 
 - name: Add Docker GPG apt Key
