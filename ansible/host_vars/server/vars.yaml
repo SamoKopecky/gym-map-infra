@@ -1,5 +1,3 @@
 ---
-wireguard_host_address: 10.0.0.1
-wireguard_keep_alive: 25
 local_hostname: mars
-
+wireguard_port: 51822
