@@ -45,6 +45,7 @@
     owner: root
     group: root
     mode: "0744"
+    force: no
 
 - name: Enable ip forwarding
   become: true

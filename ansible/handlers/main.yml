@@ -4,3 +4,6 @@
     name: sshd
     state: restarted
 
+- name: restart ufw
+  command: ufw reload
+

@@ -13,7 +13,6 @@ ansible-playbook site.yml --ask-vault-pass
 TODO:
 
 - add cron to certbot
-- backup postgre to bucket
-- add vpn
+- backups
 - hide kc admin behind vpn
 - grafana behind vpn

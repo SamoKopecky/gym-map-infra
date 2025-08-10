@@ -8,23 +8,19 @@
       ansible.builtin.import_tasks: handlers/main.yml
 
   tasks:
-    - name: Use system role
+    - name: Setup system
       ansible.builtin.import_role:
         name: system
       tags:
         - system
-
-- name: Setup app
-  hosts: server
-
-  handlers:
-    - name: Import global handlers
-      ansible.builtin.import_tasks: handlers/main.yml
-
-  tasks:
-    - name: Use server system role
+    - name: Setup vpn & clone app
       ansible.builtin.import_role:
-        name: app
+        name: vpn
       tags:
-        - app
+        - vpn
+    - name: Setup firewall
+      ansible.builtin.import_role:
+        name: ufw
+      tags:
+        - ufw
 
