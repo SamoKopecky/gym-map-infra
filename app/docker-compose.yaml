@@ -10,6 +10,7 @@ services:
     ports:
       - 80:80/tcp
       - 443:443/tcp
+      - 3000:3000/tcp
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/snippets/:/etc/nginx/snippets/:ro
@@ -79,6 +80,16 @@ services:
       - |
         ./wait-for.sh -t 10 db:5432 -- echo "wait-for: Postgres DB is ready"
         /app/gym-map --debug
+
+  grafana:
+    networks:
+      - nginx  
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    user: 'root:root'
+    volumes:
+      - /var/grafana:/var/lib/grafana
+    restart: unless-stopped
 
 networks:
   postgresql:
