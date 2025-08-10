@@ -2,6 +2,4 @@
 local_hostname: mars
 ufw_allowed_ports:
   - 22
-  - 80
-  - 443
   - 51822 

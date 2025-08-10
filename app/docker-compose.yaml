@@ -10,7 +10,7 @@ services:
     ports:
       - 80:80/tcp
       - 443:443/tcp
-      - 3000:3000/tcp
+      - 10.0.0.0/24:3000:3000/tcp
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/snippets/:/etc/nginx/snippets/:ro
