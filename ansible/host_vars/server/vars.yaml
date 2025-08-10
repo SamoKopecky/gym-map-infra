@@ -1,0 +1,3 @@
+---
+local_hostname: mars
+wireguard_port: 51822

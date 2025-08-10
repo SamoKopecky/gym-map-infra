@@ -4,8 +4,58 @@
     repo: 'https://github.com/SamoKopecky/gym-map-infra'
     dest: $HOME/gym-map-infra
 
+- name: Generate wireguard private keys
+  block:
+    - name: Generate WireGuard private key
+      ansible.builtin.command: wg genkey
+      register: wireguard__register_private_key
+      no_log: "{{ ansible_verbosity < 3 }}"
 
-- name: Run `docker compose up`
-  community.docker.docker_compose_v2:
-    project_src: gym-map-infra/app
-  register: output
+    - name: Set private key fact
+      ansible.builtin.set_fact:
+        wireguard__private_key: "{{ wireguard__register_private_key.stdout }}"
+      no_log: "{{ ansible_verbosity < 3 }}"
+
+- name: Derive wireguard public key
+  block:
+    - name: Derive wireguard public key
+      ansible.builtin.command: wg pubkey
+      args:
+        stdin: "{{ wireguard__private_key }}"
+      register: wireguard__register_public_key
+      changed_when: false
+      check_mode: false
+      no_log: "{{ ansible_verbosity < 3 }}"
+
+    - name: Set public key fact
+      ansible.builtin.set_fact:
+        wireguard__public_key: "{{ wireguard__register_public_key.stdout }}"
+
+- name: Create wireguard config directory
+  ansible.builtin.file:
+    dest: /etc/wireguard
+    state: directory
+    mode: "0700"
+
+- name: Generate wireguard config file
+  become: true
+  ansible.builtin.template:
+    src: wg.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    owner: root
+    group: root
+    mode: "0744"
+
+- name: Enable ip forwarding
+  become: true
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    sysctl_set: true
+
+- name: Enable WireGuard service
+  become: true
+  ansible.builtin.service:
+    name: wg-quick@wg0.service
+    enabled: true
+
