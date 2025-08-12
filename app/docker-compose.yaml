@@ -10,7 +10,7 @@ services:
     ports:
       - 80:80/tcp
       - 443:443/tcp
-      - 10.0.0.1:3000:3000/tcp
+      - 10.0.0.1:8080:8080/tcp
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/snippets/:/etc/nginx/snippets/:ro
@@ -84,6 +84,7 @@ services:
   grafana:
     networks:
       - nginx  
+      - monitoring
     image: grafana/grafana-oss:latest
     container_name: grafana
     user: 'root:root'
@@ -91,7 +92,36 @@ services:
       - /var/grafana:/var/lib/grafana
     restart: unless-stopped
 
+  prometheus:
+    networks:
+      - monitoring
+      - nginx
+    image: prom/prometheus:v2.53.5
+    container_name: prometheus
+    user: 'root:root'
+    command: >
+      --config.file=/etc/prometheus/prometheus.yml
+      --log.level=debug
+      --web.config.file=/etc/prometheus/web.yml
+    volumes:
+      - /var/prometheus/data:/prometheus
+      - /var/prometheus/config:/etc/prometheus
+    restart: unless-stopped
+
+  dns:
+    container_name: dns
+    restart: unless-stopped
+    image: strm/dnsmasq
+    volumes:
+      - ./dnsmasq.conf:/etc/dnsmasq.conf
+    ports:
+      - "53:53/udp"
+    cap_add:
+      - NET_ADMIN
+
+
 networks:
   postgresql:
   nginx:
+  monitoring:
 
